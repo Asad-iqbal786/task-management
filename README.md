@@ -18,7 +18,6 @@ A Laravel-based Task Management System with admin authentication, user and task 
 - Composer
 - Laravel 12.x
 - MySQL or compatible DB
-- Node.js & npm (optional for frontend assets)
 
 ## ⚙️ Installation
 
