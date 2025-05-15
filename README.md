@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 # task-management
-=======
 # Task Management System
 
 A Laravel-based Task Management System with admin authentication, user and task CRUD functionality, and feature/unit testing using PHPUnit.
