@@ -30,11 +30,11 @@
                             <div class="col-6">
                                 <div class="mb-3">
                                     <label for="title" class="form-label">Assign user </label>
-                                    <select name="user_id" id="" class="form-control" >
+                                    <select name="user_id" id="" class="form-control">
                                         @foreach ($getUer as $user)
-                                            <option value="{{ $user['id']}}"> {{ $user['name']}} </option>
+                                            <option value="{{ $user['id'] }}"> {{ $user['name'] }} </option>
                                         @endforeach
-                                    </select> 
+                                    </select>
                                     @error('user_id')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -45,9 +45,10 @@
                             <div class="col-6">
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="description" name="description"
-                                        value="{{ old('description', $taskData['description'] ?? '') }}"
-                                        placeholder="Enter your description">
+                                    <textarea class="form-control" placeholder="Leave a comment here" name="description" id="description"
+                                        style="height: 100px" spellcheck="false">
+                                            {{ old('description', $taskData['description'] ?? '') }}
+                                        </textarea>
                                     @error('description')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -56,7 +57,6 @@
 
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
-
                     </form>
 
 

@@ -43,7 +43,7 @@ class UserController extends Controller
                  if (empty($id)) {
                     // Create new user
                     $user = User::create([
-                        'name' => $data['name'] . ' ' . $data['name'],
+                        'name' => $data['name'],
                         'email' => $data['email'],
                         'password' => Hash::make(11111111),
                         'role' => 'user',
@@ -51,7 +51,7 @@ class UserController extends Controller
                 } else {
                     // Update user
                     $user->update([
-                        'name' => $data['name'] . ' ' . $data['name'],
+                        'name' => $data['name'],
                         'email' => $data['email'],
                     ]);
                 }

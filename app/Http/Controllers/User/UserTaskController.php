@@ -5,17 +5,22 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\TaskCompleteStatus;
+use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class UserTaskController extends Controller
 {
-        use AuthorizesRequests;
-
+    use AuthorizesRequests;
+    protected $taskService;
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
     public function index()
     {
-        $userInfo = auth()->user();
-        $tasks = Task::where('user_id', $userInfo->id)->with('user', 'completeStatus')->get();
+        $user = auth()->user();
+        $tasks = $this->taskService->findTaskByUserId($user->id);
         return view('user.pages.tasks.index', compact('tasks'));
     }
 

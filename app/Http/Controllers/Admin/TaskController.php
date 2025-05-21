@@ -6,15 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\TaskCompleteStatus;
 use App\Models\User;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class TaskController extends Controller
 {
+    protected $taskService;
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
     public function index()
     {
-        $tasks = Task::with('user', 'completeStatus')->get();
+        $tasks = $this->taskService->all();
         return view('admin.pages.tasks.index', compact('tasks'));
     }
     public function addEditTask(Request $request, $id = null)
@@ -42,13 +48,7 @@ class TaskController extends Controller
 
                 if (empty($id)) {
                     // Create a new Task
-                    $task = Task::create([
-                        'title' => $data['title'],
-                        'description' => $data['description'],
-                        'is_completed' => 'no',  // Default to 'no' until task is completed
-                        'user_id' => $data['user_id'],
-                    ]);
-
+                    $task = $this->taskService->store($data);
                     // Create TaskCompleteStatus record for the newly created task
                     TaskCompleteStatus::create([
                         'task_id' => $task->id,
@@ -59,15 +59,10 @@ class TaskController extends Controller
                     // Update Task if $id is provided
                     $task = Task::find($id);
                     if ($task) {
-                        $task->update([
-                            'title' => $data['title'],
-                            'description' => $data['description'],
-                            'is_completed' => $data['is_completed'] ?? 'no',  // Update the completion status if provided
-                            'user_id' => $data['user_id'],
-                        ]);
-
+                        $data['is_completed'] = $data['is_completed'] ?? 'no';
+                        $taskData = $this->taskService->update($id, $data);
                         // Update TaskCompleteStatus for the task if it exists
-                        $status = TaskCompleteStatus::where('task_id', $task->id)->first();
+                        $status = TaskCompleteStatus::where('task_id',  $taskData->id)->first();
                         if ($status) {
                             $status->update([
                                 'is_completed' => $data['is_completed'] ?? 'no',
@@ -75,7 +70,6 @@ class TaskController extends Controller
                         }
                     }
                 }
-
 
                 DB::commit();
                 Session::flash('success', $message);
@@ -92,7 +86,7 @@ class TaskController extends Controller
 
     public function taskDestroy($id)
     {
-        $task = Task::findOrFail($id);
+        $task = $this->taskService->find($id);
         try {
             $task->delete();
             Session::flash('success', 'Task deleted successfully.');
@@ -109,7 +103,7 @@ class TaskController extends Controller
             'is_completed' => 'required|in:yes,no',
         ]);
 
-        $task = Task::findOrFail($id);
+        $task = $this->taskService->find($id);
 
         // Update the task
         $task->update([
